@@ -71,10 +71,20 @@ namespace QuizMaster
                 var token = cancellationTokenSource.Token;
                 var inputTask = Task.Run(() =>
                 {
-                    Console.WriteLine("\nChoose the correct answer number:");
-                    string userAnswer = Console.ReadLine();
-                    answered = true;
-                    return userAnswer;
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.WriteLine("\nChoose the correct answer number:");
+                            int userAnswer = int.Parse(Console.ReadLine());
+                            answered = true;
+                            return userAnswer;
+                        }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("Invalid input. Please enter a valid number.");
+                        }
+                    }
                 });
 
                 var timerTask = Task.Run(async () =>
@@ -90,8 +100,11 @@ namespace QuizMaster
                     }
                     if (!answered)
                     {
-                        Console.WriteLine("\rTime's up!                      ");
+                        Console.WriteLine($"\rTime's up!  The correct answer is: {correctAnswer + 1}. {options[correctAnswer]}.");
+                        Console.WriteLine($"Your current score is {score} out of {i + 1}.\n");
                         cancellationTokenSource.Cancel();
+                        Console.WriteLine(i == questions.Count - 1 ? "Loading... submitting quiz" : "Loading... Get ready for the next question");
+                        Thread.Sleep(6000);
                     }
                 });
 
@@ -101,10 +114,10 @@ namespace QuizMaster
 
                     if (inputTask.IsCompleted)
                     {
-                        string userAnswer = inputTask.Result;
-                        if (int.TryParse(userAnswer, out int selectedOption) && selectedOption >= 1 && selectedOption <= options.Length)
+                        int userAnswer = inputTask.Result;
+                        if (userAnswer >= 1 && userAnswer <= options.Length)
                         {
-                            if (selectedOption - 1 == correctAnswer)
+                            if (userAnswer - 1 == correctAnswer)
                             {
                                 Console.WriteLine("Correct!");
                                 score++;
@@ -113,29 +126,32 @@ namespace QuizMaster
                             {
                                 Console.WriteLine($"Incorrect. The correct answer is: {correctAnswer + 1}. {options[correctAnswer]}.");
                             }
-                            Console.WriteLine("Loading... Get ready for the next question");
+                            Console.WriteLine($"Your current score is {score} out of {i + 1}.\n");
+                            Console.WriteLine(i == questions.Count - 1 ? "Loading... Submitting Quiz" : "Loading... Get ready for the next question");
                             Thread.Sleep(6000);
                         }
                         else
                         {
                             Console.WriteLine("Invalid input. Please enter a number corresponding to one of the options.");
-                            Console.WriteLine("Loading... Get ready for re answer");
+                            Console.WriteLine("Loading... Get ready for re-answer");
                             Thread.Sleep(6000);
                             i--;
                         }
                     }
                     else
                     {
-                        
                         Console.WriteLine($"The correct answer is: {correctAnswer + 1}. {options[correctAnswer]}.");
                     }
                 }
                 catch (OperationCanceledException)
                 {
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"An error occurred: {e.Message}");
+                }
 
                 Console.WriteLine($"Your current score is {score} out of {i + 1}.\n");
-
             }
 
             Console.Clear();
@@ -143,3 +159,4 @@ namespace QuizMaster
         }
     }
 }
+
