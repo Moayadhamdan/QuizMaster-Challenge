@@ -59,6 +59,7 @@ namespace QuizMaster
             for (int i = 0; i < questions.Count; i++)
             {
                 var (question, options, correctAnswer) = questions[i];
+                Console.Clear();
                 Console.WriteLine($"Q{i + 1}: {question}");
                 for (int j = 0; j < options.Length; j++)
                 {
@@ -112,15 +113,20 @@ namespace QuizMaster
                             {
                                 Console.WriteLine($"Incorrect. The correct answer is: {correctAnswer + 1}. {options[correctAnswer]}.");
                             }
+                            Console.WriteLine("Loading... Get ready for the next question");
+                            Thread.Sleep(6000);
                         }
                         else
                         {
                             Console.WriteLine("Invalid input. Please enter a number corresponding to one of the options.");
+                            Console.WriteLine("Loading... Get ready for re answer");
+                            Thread.Sleep(6000);
                             i--;
                         }
                     }
                     else
                     {
+                        
                         Console.WriteLine($"The correct answer is: {correctAnswer + 1}. {options[correctAnswer]}.");
                     }
                 }
@@ -129,8 +135,10 @@ namespace QuizMaster
                 }
 
                 Console.WriteLine($"Your current score is {score} out of {i + 1}.\n");
+
             }
 
+            Console.Clear();
             Console.WriteLine($"Your final score is {score} out of {questions.Count}.");
         }
     }
